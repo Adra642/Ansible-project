@@ -1,0 +1,28 @@
+---
+- name: Validate control-plane token availability
+  ansible.builtin.assert:
+    that:
+      - hostvars[groups['master'][0]].k3s_server_token is defined
+    fail_msg: "Control-plane token was not found. Run the server play first."
+
+- name: Download K3s installer script
+  ansible.builtin.get_url:
+    url: "{{ k3s_install_script_url }}"
+    dest: /tmp/k3s-install.sh
+    mode: "0755"
+
+- name: Install K3s agent
+  ansible.builtin.command: /bin/sh /tmp/k3s-install.sh
+  args:
+    creates: "{{ k3s_agent_service_file }}"
+  environment:
+    K3S_URL: "{{ k3s_api_server }}"
+    K3S_TOKEN: "{{ hostvars[groups['master'][0]].k3s_server_token }}"
+    INSTALL_K3S_EXEC: "agent {{ k3s_agent_extra_args }}"
+    INSTALL_K3S_VERSION: "{{ k3s_version if k3s_version | length > 0 else omit }}"
+  no_log: true
+
+- name: Remove installer script
+  ansible.builtin.file:
+    path: /tmp/k3s-install.sh
+    state: absent

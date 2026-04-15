@@ -1,0 +1,34 @@
+---
+- name: Download K3s installer script
+  ansible.builtin.get_url:
+    url: "{{ k3s_install_script_url }}"
+    dest: /tmp/k3s-install.sh
+    mode: "0755"
+
+- name: Install K3s server
+  ansible.builtin.command: /bin/sh /tmp/k3s-install.sh
+  args:
+    creates: "{{ k3s_server_service_file }}"
+  environment:
+    INSTALL_K3S_EXEC: "server {{ k3s_server_extra_args }}"
+    INSTALL_K3S_VERSION: "{{ k3s_version if k3s_version | length > 0 else omit }}"
+
+- name: Wait for node token
+  ansible.builtin.wait_for:
+    path: "{{ k3s_token_file }}"
+
+- name: Read node token
+  ansible.builtin.slurp:
+    src: "{{ k3s_token_file }}"
+  register: k3s_server_node_token_raw
+
+- name: Save cluster join token in memory
+  ansible.builtin.set_fact:
+    k3s_server_token: "{{ k3s_server_node_token_raw.content | b64decode | trim }}"
+    cacheable: true
+  no_log: true
+
+- name: Remove installer script
+  ansible.builtin.file:
+    path: /tmp/k3s-install.sh
+    state: absent

@@ -1,0 +1,16 @@
+---
+- name: Render Jellyfin manifest
+  ansible.builtin.template:
+    src: jellyfin.yaml.j2
+    dest: /tmp/jellyfin.yaml
+    mode: "0644"
+
+- name: Apply Jellyfin manifest
+  ansible.builtin.command: /usr/local/bin/k3s kubectl apply -f /tmp/jellyfin.yaml
+  register: jellyfin_apply
+  changed_when: "'created' in jellyfin_apply.stdout or 'configured' in jellyfin_apply.stdout"
+
+- name: Remove rendered Jellyfin manifest
+  ansible.builtin.file:
+    path: /tmp/jellyfin.yaml
+    state: absent

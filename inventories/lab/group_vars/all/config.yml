@@ -1,0 +1,30 @@
+---
+# K3s installation and configuration variables for all hosts
+# Optional: pin a specific release, e.g. v1.31.6+k3s1.
+k3s_version: ""
+
+k3s_install_script_url: https://get.k3s.io
+k3s_token_file: /var/lib/rancher/k3s/server/node-token
+k3s_server_service_file: /etc/systemd/system/k3s.service
+k3s_agent_service_file: /etc/systemd/system/k3s-agent.service
+
+# Additional flags can be passed to the installer through these vars.
+k3s_server_extra_args: "--write-kubeconfig-mode 644"
+k3s_agent_extra_args: ""
+
+# API endpoint used by agents to join the cluster.
+k3s_api_server: "https://{{ hostvars[groups['master'][0]].ansible_host }}:6443"
+
+# Jellyfin workload settings.
+jellyfin_namespace: media
+jellyfin_name: jellyfin
+jellyfin_image: jellyfin/jellyfin:latest
+jellyfin_image_pull_policy: IfNotPresent
+jellyfin_container_port: 8096
+jellyfin_node_port: 30096
+jellyfin_storage_class: local-path
+jellyfin_config_size: 2Gi
+jellyfin_media_size: 20Gi
+jellyfin_puid: 1000
+jellyfin_pgid: 1000
+jellyfin_tz: UTC

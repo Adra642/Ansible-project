@@ -1,0 +1,20 @@
+---
+- name: Configure K3s control plane
+  hosts: master
+  become: true
+  roles:
+    - base
+    - k3s_server
+
+- name: Configure K3s agents
+  hosts: agents
+  become: true
+  roles:
+    - base
+    - k3s_agent
+
+- name: Deploy Jellyfin
+  hosts: master
+  become: true
+  roles:
+    - jellyfin

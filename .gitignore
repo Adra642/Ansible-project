@@ -1,0 +1,4 @@
+.cache/
+.vscode/
+inventories/lab/group_vars/all/secrets.yml
+inventories/lab/host_vars/
