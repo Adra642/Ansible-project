@@ -18,6 +18,9 @@ This project provisions a small K3s cluster using Ansible, organized with a main
 └── roles/
     ├── base/
     │   └── tasks/main.yml
+    ├── gitea/
+    │   ├── tasks/main.yml
+    │   └── templates/gitea.yaml.j2
     ├── k3s_agent/
     │   └── tasks/main.yml
     ├── k3s_server/
@@ -44,11 +47,11 @@ This project provisions a small K3s cluster using Ansible, organized with a main
 ansible-playbook playbooks/site.yml
 ```
 
-The final play deploys Jellyfin into the `media` namespace with a NodePort service on `30096` and persistent volumes for both `/config` and `/media`.
+The final plays deploy Jellyfin into the `media` namespace and Gitea into the `forge` namespace. Jellyfin uses NodePort `30096` with persistent volumes for both `/config` and `/media`; Gitea uses NodePorts `30080` for HTTP and `30022` for SSH, while the container listens on SSH `2222` with persistent storage under `/data`.
 
 ## Academic best-practice notes
 
-- Roles split responsibilities (`base`, `k3s_server`, `k3s_agent`, `jellyfin`)
+- Roles split responsibilities (`base`, `k3s_server`, `k3s_agent`, `jellyfin`, `gitea`)
 - Environment variables and settings are centralized in `group_vars`
 - Idempotency is preserved with `creates` checks
 - Token handling remains in memory and is not persisted to files

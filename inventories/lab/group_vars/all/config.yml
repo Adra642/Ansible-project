@@ -28,3 +28,20 @@ jellyfin_media_size: 20Gi
 jellyfin_puid: 1000
 jellyfin_pgid: 1000
 jellyfin_tz: UTC
+
+# Gitea workload settings.
+gitea_namespace: forge
+gitea_name: gitea
+gitea_image: gitea/gitea:latest
+gitea_image_pull_policy: IfNotPresent
+gitea_container_http_port: 3000
+gitea_container_ssh_port: 2222
+gitea_http_node_port: 30080
+gitea_ssh_node_port: 30022
+gitea_storage_class: local-path
+gitea_data_size: 5Gi
+gitea_uid: 1000
+gitea_gid: 1000
+gitea_ssh_domain: "{{ hostvars[groups['master'][0]].ansible_host }}"
+gitea_root_url: "http://{{ hostvars[groups['master'][0]].ansible_host }}:{{
+  gitea_http_node_port }}/"

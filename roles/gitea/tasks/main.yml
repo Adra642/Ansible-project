@@ -1,0 +1,16 @@
+---
+- name: Render Gitea manifest
+  ansible.builtin.template:
+    src: gitea.yaml.j2
+    dest: /tmp/gitea.yaml
+    mode: "0644"
+
+- name: Apply Gitea manifest
+  ansible.builtin.command: /usr/local/bin/k3s kubectl apply -f /tmp/gitea.yaml
+  register: gitea_apply
+  changed_when: "'created' in gitea_apply.stdout or 'configured' in gitea_apply.stdout"
+
+- name: Remove rendered Gitea manifest
+  ansible.builtin.file:
+    path: /tmp/gitea.yaml
+    state: absent

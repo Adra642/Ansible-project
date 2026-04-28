@@ -18,3 +18,9 @@
   become: true
   roles:
     - jellyfin
+
+- name: Deploy Gitea
+  hosts: master
+  become: true
+  roles:
+    - gitea
